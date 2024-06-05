@@ -34,12 +34,14 @@ func _process(delta):
 		
 	if Input.is_action_pressed("dash"):
 		if (dash_cooldown.is_stopped()):
+			$explodinghead.emitting = true
+			$AudioStreamPlayer.playing = true
 			$AnimationPlayer.play("new_animation")
+			$explosion.play("explosion_fade_out")
 			velocity = Vector2.UP.rotated(rotation) * speed * 40
 			if Input.is_action_pressed("move_down"):
 				velocity = - velocity
 			dash_cooldown.start(-1)
-	
 	position += velocity * delta
 
 func _on_pause_button_toggled(toggled_on):
