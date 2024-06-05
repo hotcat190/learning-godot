@@ -1,8 +1,11 @@
-[gd_scene load_steps=10 format=3 uid="uid://c25v2hje7dvyv"]
+[gd_scene load_steps=16 format=3 uid="uid://c25v2hje7dvyv"]
 
 [ext_resource type="Script" path="res://Root.gd" id="1_v381l"]
 [ext_resource type="Script" path="res://Player.gd" id="2_s7pj8"]
 [ext_resource type="Texture2D" uid="uid://bg7iy5wb4x5ci" path="res://icon.svg" id="3_tlh6n"]
+[ext_resource type="Script" path="res://DashCooldownTimer.gd" id="4_j016g"]
+[ext_resource type="Script" path="res://PlayField.gd" id="4_st2v5"]
+[ext_resource type="Script" path="res://PlayerDashAnimation.gd" id="4_wnknx"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6y2t0"]
 size = Vector2(126, 126)
@@ -45,8 +48,19 @@ _data = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_2cxhk"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_6cnto"]
-size = Vector2(1152, 648)
+[sub_resource type="SegmentShape2D" id="SegmentShape2D_v5f6j"]
+b = Vector2(1152, 0)
+
+[sub_resource type="SegmentShape2D" id="SegmentShape2D_nt0kf"]
+a = Vector2(1152, 0)
+b = Vector2(1152, 648)
+
+[sub_resource type="SegmentShape2D" id="SegmentShape2D_45q4y"]
+a = Vector2(1152, 648)
+b = Vector2(0, 648)
+
+[sub_resource type="SegmentShape2D" id="SegmentShape2D_vhaw5"]
+b = Vector2(0, 648)
 
 [node name="Root" type="Node"]
 script = ExtResource("1_v381l")
@@ -57,8 +71,9 @@ offset_bottom = 128.0
 toggle_mode = true
 text = "Pause"
 
-[node name="Player" type="Area2D" parent="."]
-position = Vector2(576, 324)
+[node name="Player" type="CharacterBody2D" parent="."]
+position = Vector2(576, 328)
+motion_mode = 1
 script = ExtResource("2_s7pj8")
 
 [node name="PlayerSprite" type="Sprite2D" parent="Player"]
@@ -71,6 +86,7 @@ shape = SubResource("RectangleShape2D_6y2t0")
 
 [node name="DashCooldownTimer" type="Timer" parent="Player"]
 wait_time = 0.75
+script = ExtResource("4_j016g")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Player"]
 root_node = NodePath("../PlayerSprite")
@@ -78,12 +94,26 @@ libraries = {
 "": SubResource("AnimationLibrary_4cwrj"),
 "new_library": SubResource("AnimationLibrary_2cxhk")
 }
+script = ExtResource("4_wnknx")
 
-[node name="PlayField" type="StaticBody2D" parent="."]
+[node name="PlayField" type="Node2D" parent="."]
+script = ExtResource("4_st2v5")
 
-[node name="PlayFieldCollisionShape" type="CollisionShape2D" parent="PlayField"]
-position = Vector2(576, 324)
-shape = SubResource("RectangleShape2D_6cnto")
+[node name="PlayField" type="StaticBody2D" parent="PlayField"]
+
+[node name="Top" type="CollisionShape2D" parent="PlayField/PlayField"]
+shape = SubResource("SegmentShape2D_v5f6j")
+
+[node name="Right" type="CollisionShape2D" parent="PlayField/PlayField"]
+shape = SubResource("SegmentShape2D_nt0kf")
+
+[node name="Bottom" type="CollisionShape2D" parent="PlayField/PlayField"]
+shape = SubResource("SegmentShape2D_45q4y")
+
+[node name="Left" type="CollisionShape2D" parent="PlayField/PlayField"]
+shape = SubResource("SegmentShape2D_vhaw5")
 
 [connection signal="toggled" from="PauseButton" to="." method="_on_pause_button_toggled"]
 [connection signal="toggled" from="PauseButton" to="Player" method="_on_pause_button_toggled"]
+[connection signal="dash" from="Player" to="Player/DashCooldownTimer" method="_on_player_dash"]
+[connection signal="dash" from="Player" to="Player/AnimationPlayer" method="_on_player_dash"]
