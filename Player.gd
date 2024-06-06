@@ -8,10 +8,10 @@ const DASH_MULTIPLIER: int = 25
 @export var speed = 6
 
 @onready 
-var dash_cooldown:Timer = get_node("Dash/DashCooldownTimer")
+var dash_cooldown:Timer = get_node("Dash/DashCooldown")
 
 func _ready():
-	dash_cooldown.timeout.connect(_on_timer_timeout)	
+	dash_cooldown.timeout.connect(_on_timer_timeout)
 	
 func _on_timer_timeout():
 	dash_cooldown.stop()
@@ -36,7 +36,7 @@ func _process(delta):
 		if (dash_cooldown.is_stopped()):
 			distance = Vector2.UP.rotated(rotation) * speed * DASH_MULTIPLIER
 			if Input.is_action_pressed("move_down"):
-				distance = - distance			
+				distance = - distance
 			dash.emit()
 		
 	move_and_collide(distance)

@@ -1,0 +1,169 @@
+[gd_scene load_steps=14 format=3 uid="uid://dij6b1sbeqj82"]
+
+[ext_resource type="Script" path="res://Player.gd" id="1_4n7te"]
+[ext_resource type="Texture2D" uid="uid://bg7iy5wb4x5ci" path="res://icon.svg" id="2_2wy8b"]
+[ext_resource type="Script" path="res://Dash.gd" id="3_dip3j"]
+[ext_resource type="AudioStream" uid="uid://cgxw2px4d47c0" path="res://fart-with-reverb.mp3" id="4_mr6gi"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6y2t0"]
+size = Vector2(126, 126)
+
+[sub_resource type="Curve" id="Curve_y0vf0"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.996894, 0.164505), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Animation" id="Animation_sfoha"]
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:scale")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0.5, 0.5)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../Dash/explodinghead:color")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(0, 0, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_hmen1"]
+resource_name = "explosion_fade_out"
+length = 0.5
+loop_mode = 2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("../Dash/explodinghead:color")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(0, 0, 1, 1), Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_rgis0"]
+resource_name = "new_animation"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:scale")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(0.5, 0.5), Vector2(0.1, 1), Vector2(0.8, 0.4), Vector2(0.5, 0.5)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(0, 0, 1, 1), Color(0, 1, 1, 1), Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_4cwrj"]
+_data = {
+"RESET": SubResource("Animation_sfoha"),
+"explosion_fade_out": SubResource("Animation_hmen1"),
+"new_animation": SubResource("Animation_rgis0")
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_2cxhk"]
+
+[sub_resource type="Animation" id="Animation_dbroo"]
+resource_name = "explosion_fade_out"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Dash/explodinghead:color")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(0, 0, 1, 1), Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_nmp5u"]
+_data = {
+"explosion_fade_out": SubResource("Animation_dbroo")
+}
+
+[node name="Player" type="CharacterBody2D"]
+position = Vector2(576, 320)
+motion_mode = 1
+script = ExtResource("1_4n7te")
+
+[node name="PlayerSprite" type="Sprite2D" parent="."]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_2wy8b")
+
+[node name="PlayerCollisionShape" type="CollisionShape2D" parent="."]
+scale = Vector2(0.5, 0.5)
+shape = SubResource("RectangleShape2D_6y2t0")
+
+[node name="Dash" type="Node2D" parent="."]
+script = ExtResource("3_dip3j")
+
+[node name="explodinghead" type="CPUParticles2D" parent="Dash"]
+scale = Vector2(10, 2)
+emitting = false
+amount = 60
+lifetime = 0.5
+one_shot = true
+explosiveness = 1.0
+direction = Vector2(0, 1)
+spread = 11.59
+gravity = Vector2(0, 0)
+initial_velocity_min = 50.0
+initial_velocity_max = 100.0
+scale_amount_min = 5.0
+scale_amount_max = 10.0
+scale_amount_curve = SubResource("Curve_y0vf0")
+color = Color(0, 0, 1, 1)
+
+[node name="DashCooldown" type="Timer" parent="Dash"]
+wait_time = 0.75
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Dash"]
+root_node = NodePath("../../PlayerSprite")
+libraries = {
+"": SubResource("AnimationLibrary_4cwrj"),
+"new_library": SubResource("AnimationLibrary_2cxhk")
+}
+
+[node name="explosion" type="AnimationPlayer" parent="Dash"]
+root_node = NodePath("../..")
+libraries = {
+"": SubResource("AnimationLibrary_nmp5u")
+}
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="Dash"]
+stream = ExtResource("4_mr6gi")
+volume_db = -21.595
+
+[connection signal="dash" from="." to="Dash" method="_on_player_dash"]

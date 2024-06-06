@@ -10,5 +10,5 @@ func _on_player_dash():
 	$AudioStreamPlayer.playing = true
 	
 	#Start cooldown timer
-	$DashCooldownTimer.start(-1)
+	$DashCooldown.start(-1)
 	
